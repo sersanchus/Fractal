@@ -1,0 +1,45 @@
+GCC=gcc
+GCCOPTIONS=-w -O3
+
+all: FractalLib.a Fractal3d FractalView FractalEncode FractalTransLimit #FractalShader FractalTest
+
+FractalLib_cpp= FLBitmap.cpp FLFile.cpp FLFractal.cpp FLFractalConst.cpp FLFractalQuad.cpp FLTrans.cpp FLTransConst.cpp FLTransQuad.cpp FLVector.cpp FLDomains.cpp
+FractalLib_o= $(FractalLib_cpp:.cpp=.o)
+FractalLib.a: $(FractalLib_o)
+	ar -rvs FractalLib.a $(FractalLib_o)
+
+Fractal3d_cpp= Fractal3d.cpp Frustum.cpp Matrix.cpp Vector.cpp Point.cpp Triangle.cpp
+Fractal3d_o= $(Fractal3d_cpp:.cpp=.o)
+Fractal3d: FractalLib.a $(Fractal3d_o)
+	$(GCC) $(GCCOPTIONS) -o Fractal3d $(Fractal3d_o) FractalLib.a -lstdc++ -lopengl32 -lglu32 -lglut32 -lz
+
+FractalView_cpp= FractalView.cpp MarchingCubes.cpp objlib.cpp tblib.cpp
+FractalView_o= $(FractalView_cpp:.cpp=.o)
+FractalView: FractalLib.a $(FractalView_o)
+	$(GCC) $(GCCOPTIONS) -o FractalView $(FractalView_o) FractalLib.a -lstdc++ -lopengl32 -lglu32 -lglut32 -lz
+
+FractalEncode_cpp= FractalEncode.cpp
+FractalEncode_o= $(FractalEncode_cpp:.cpp=.o)
+FractalEncode: FractalLib.a $(FractalEncode_o)
+	$(GCC) $(GCCOPTIONS) -o FractalEncode $(FractalEncode_o) FractalLib.a -lstdc++ -lz
+
+FractalTransLimit_cpp= FractalTransLimit.cpp
+FractalTransLimit_o= $(FractalTransLimit_cpp:.cpp=.o)
+FractalTransLimit: $(FractalTransLimit_o)
+	$(GCC) $(GCCOPTIONS) -o FractalTransLimit $(FractalTransLimit_o) -lstdc++
+
+FractalShader_cpp= main.cpp SimpleGL.cpp
+FractalShader_o= $(FractalShader_cpp:.cpp=.o)
+FractalShader: $(FractalShader_o)
+	$(GCC) $(GCCOPTIONS) -o FractalShader $(FractalShader_o) -lstdc++
+
+FractalTest_cpp= FractalTest.cpp
+FractalTest_o= $(FractalTest_cpp:.cpp=.o)
+FractalTest: $(FractalTest_o)
+	$(GCC) $(GCCOPTIONS) -o FractalTest $(FractalTest_o) -lstdc++
+
+%.o: %.cpp %.h
+	$(GCC) $(GCCOPTIONS) -c $<
+
+%.o: %.cpp
+	$(GCC) $(GCCOPTIONS) -c $<
